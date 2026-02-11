@@ -2,7 +2,6 @@ const fs = require('fs');
 const pdf = require('pdf-parse');
 const axios = require('axios');
 const cheerio = require('cheerio');
-const {pipeline} = require("@xenova/transformers");
 const {Chunk, Document} = require('../../source/db');
 const {Sequelize} = require('sequelize');
 
@@ -86,6 +85,7 @@ function chunkText(text, maxLength = 800) {
 let embedder;
 
 async function initEmbedder() {
+  const {pipeline} = await require("@xenova/transformers");
   embedder = await pipeline(
     "feature-extraction",
     "Xenova/all-MiniLM-L6-v2"
