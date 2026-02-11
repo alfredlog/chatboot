@@ -2,6 +2,7 @@ require("dotenv").config();
 const { Firma } = require("../source/db");
 const Stripe = require("stripe");
 const stripe = new Stripe(process.env.PRIVATE_KEY);
+const express = require("express")
 
 module.exports = firmaWebhook = (app) => {
   app.post("/webhook", express.raw({ type: '*/*' }), async (req, res) => {
