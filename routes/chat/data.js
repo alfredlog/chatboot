@@ -85,7 +85,7 @@ function chunkText(text, maxLength = 800) {
 let embedder;
 
 async function initEmbedder() {
-  const {pipeline} = await require("@xenova/transformers");
+  const {pipeline} = await import("@xenova/transformers");
   embedder = await pipeline(
     "feature-extraction",
     "Xenova/all-MiniLM-L6-v2"
