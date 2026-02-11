@@ -10,12 +10,13 @@ const port = process.env.PORT || 2005;
 app.use(cors());
 
 // Middleware to parse JSON bodies
-app.use(express.json());
+
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
-
+require('./routes/webhook')(app);
+app.use(express.json());
 app.get("/", (req, res)=>{
   res.send("wellcome")
 })
@@ -37,7 +38,7 @@ findOneFirma(app);
 firmaSubscription(app);
 subscribeCancel(app);
 AddDocument(app);
-require('./routes/webhook')(app);
+
 const {createCustomer, askCustomer, loginCustomer} = require('./routes/customer');
 createCustomer(app);
 askCustomer(app);
