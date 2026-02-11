@@ -1,5 +1,5 @@
 const fs = require('fs');
-const {PDFParse} = require('pdf-parse');
+const {PDFParse} = require('pdf-parse/lib/pdf-parse.js');
 const axios = require('axios');
 const cheerio = require('cheerio');
 const {pipeline} = require("@xenova/transformers");
