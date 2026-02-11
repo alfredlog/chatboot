@@ -1,5 +1,5 @@
 const fs = require('fs');
-const {PDFParse} = require('pdf-parse/lib/pdf-parse.js');
+const pdf = require('pdf-parse');
 const axios = require('axios');
 const cheerio = require('cheerio');
 const {pipeline} = require("@xenova/transformers");
@@ -13,9 +13,11 @@ function toVector(arr) {
 }
 
 async function loadPDF(url) {
-  const res = new PDFParse({url, method: 'GET', responseType: 'arraybuffer', timeout: 10000});
-
-  const data = await res.getText();
+  const response = await axios.get(url, {
+    responseType: 'arraybuffer',
+    timeout: 10000
+  });
+  const data = await pdf(response.data);
   return data.text;
 }
 
