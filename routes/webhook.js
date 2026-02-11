@@ -34,13 +34,25 @@ module.exports = firmaWebhook = (app) => {
           if (firma) {
             firma.subscription = "premium";
             firma.stripeCustomerId = subscription.customer;
-            firma.expireAt = new Date(subscription.current_period_end * 1000);
             await firma.save();
 
             console.log(`✅ Firma ${firma.name} upgraded to PREMIUM`);
           }
         }
       }
+      if (event.type === "invoice.payment_succeeded") {
+         const invoice = event.data.object;
+         const firmaId = invoice.client_reference_id;
+         const firma = await Firma.findByPk(firmaId);
+         if (invoice.subscription) {
+            const subscription = await stripe.subscriptions.retrieve(invoice.subscription);
+
+            if (subscription.current_period_end) {
+            firma.expireAt = new Date(subscription.current_period_end * 1000);
+            await firma.save();
+             }
+          }
+        }
       if (event.type === "invoice.payment_failed") {
         const invoice = event.data.object;
 
