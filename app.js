@@ -11,7 +11,7 @@ app.use(cors());
 
 // Middleware to parse JSON bodies
 app.use(express.json());
-app.use("/webhook", express.raw({ type: "application/json" }));
+
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });

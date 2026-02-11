@@ -4,7 +4,7 @@ const Stripe = require("stripe");
 const stripe = new Stripe(process.env.PRIVATE_KEY);
 
 module.exports = firmaWebhook = (app) => {
-  app.post("/webhook", async (req, res) => {
+  app.post("/webhook", express.raw({ type: '*/*' }), async (req, res) => {
     const sig = req.headers["stripe-signature"];
     let event;
 
