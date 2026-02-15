@@ -50,6 +50,9 @@ const askCustomer = (app) => {
                     - Erfinde keine Informationen.
                     - wenn die Informationen im Kontext nicht ausreichen, um die Frage zu beantworten, sage höflich, dass du nicht helfen kannst.
                     -Sei immer höflich, hilfsbereit,professionell und kurz.
+                    -- Trenne Schritte mit <b>Schritt X:</b>
+                    - Nutze <p>-Tags statt Markdown
+                    - Verwende keine [] oder ()
                     Antworte IMMER ausschließlich im folgenden JSON-Format
                     und gib KEINEN weiteren Text zurück:
 

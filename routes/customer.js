@@ -89,10 +89,17 @@ const askCustomer = (app) => {
                     - wenn ein Schritt für die Action klar ist, füge ihn hinzu.
                     - Erfinde keine Informationen.
                     - wenn die Informationen im Kontext nicht ausreichen, um die Frage zu beantworten, sage höflich, dass du nicht helfen kannst.
-                     Sei immer höflich, hilfsbereit,professionell und kurz.
-                    - gebe mir auch die sprach, auf der du geantwortet hast zum Beispiel für Deutsch du gibst de-DE , englisch du gibst : en-US and soweit
-                    - am Ende gebe mir ein Jsons mit {text: answer, sprach: sprach} und nicht mehr in der antwort
-                    - wenn mehr schrite in der antwort gibt, trennen voneinder mit <b>`, 
+                    -Sei immer höflich, hilfsbereit,professionell und kurz.
+                    - Trenne Schritte mit <b>Schritt X:</b>
+                    - Nutze <p>-Tags statt Markdown
+                    - Verwende keine [] oder ()
+                    Antworte IMMER ausschließlich im folgenden JSON-Format
+                    und gib KEINEN weiteren Text zurück:
+
+                    {
+                     \"text\": \"hier Antwort, auf der frage des Kunden\",
+                     \"sprach\": "BCP-47 Sprachcode z.B. de-DE, en-US, fr-FR\"
+                     }`, 
                 },
                 ...customer.chatverlauf.slice(-6),
                 {
@@ -111,12 +118,19 @@ const askCustomer = (app) => {
             temperature: 0.3,
         });
         const answer = completion.choices[0].message.content;
+        let parsed 
+        try{
+            parsed = JSON.parse(answer)
+        }catch{
+              console.error("Invalid JSON from OpenAI:", parsed);
+              return res.status(500).json({ error: "AI response invalid" });
+        }
         ver.push({ role: "assistant", content: answer, timestamp: new Date() });
         await Customer.update({
             chatverlauf: ver
         }, { where: { id: req.params.customerId } });
         res.json({
-            answer: answer, sourceRefs: sourceRefs
+            answer: parsed.text, sprach: parsed.sprach, sourceRefs: sourceRefs
         });
         
     } catch (error) {
