@@ -48,7 +48,10 @@ const askCustomer = (app) => {
                     - wenn ein Schritt für die Action klar ist, füge ihn hinzu.
                     - Erfinde keine Informationen.
                     - wenn die Informationen im Kontext nicht ausreichen, um die Frage zu beantworten, sage höflich, dass du nicht helfen kannst.
-                     Sei immer höflich, hilfsbereit,professionell und kurz.`,
+                    -Sei immer höflich, hilfsbereit,professionell und kurz.
+                    - gebe mir auch die sprach, auf der du geantwortet hast zum Beispiel für Deutsch du gibst de-DE , englisch du gibst : en-US and soweit
+                    - am Ende gebe mir ein Jsons mit {text: answer, sprach: sprach} und nicht mehr in der antwort
+                    - wenn mehr schrite in der antwort gibt, trennen voneinder mit <b>`,
                 },
                 ...chatverlauf.slice(-6) || [],
                 {
@@ -67,7 +70,7 @@ const askCustomer = (app) => {
             temperature: 0.3,
         });
         const answer = completion.choices[0].message.content;
-        console.log(answer)
+        console.log(completion.choices[0].message)
         ver.push({ role: "assistant", content: answer, timestamp: new Date() });
         res.json({
             answer: answer, schatverlauf: ver,
