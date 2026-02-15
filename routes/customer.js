@@ -127,6 +127,7 @@ const askCustomer = (app) => {
             temperature: 0.3,
         });
         const answer = completion.choices[0].message.content;
+        console.log(answer)
         let parsed 
         try{
             parsed = JSON.parse(answer)
@@ -134,7 +135,7 @@ const askCustomer = (app) => {
               console.error("Invalid JSON from OpenAI:", parsed);
               return res.status(500).json({ error: "AI response invalid" });
         }
-        console.log(answer)
+       
         ver.push({ role: "assistant", content: answer, timestamp: new Date() });
         await Customer.update({
             chatverlauf: ver
