@@ -2,6 +2,8 @@ const { Firma, Actions } = require("../../source/db");
 const { OpenAI } = require("openai");
 require("dotenv").config();
 const data = require("./data");
+const { cache } = require("react");
+const { text } = require("express");
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -49,9 +51,14 @@ const askCustomer = (app) => {
                     - Erfinde keine Informationen.
                     - wenn die Informationen im Kontext nicht ausreichen, um die Frage zu beantworten, sage höflich, dass du nicht helfen kannst.
                     -Sei immer höflich, hilfsbereit,professionell und kurz.
-                    - gebe mir auch die sprach, auf der du geantwortet hast zum Beispiel für Deutsch du gibst de-DE , englisch du gibst : en-US and soweit
-                    - am Ende gebe mir ein Jsons mit {text: answer, sprach: sprach} und nicht mehr in der antwort
-                    - wenn mehr schrite in der antwort gibt, trennen voneinder mit <b>`,
+                    Antworte IMMER ausschließlich im folgenden JSON-Format
+                    und gib KEINEN weiteren Text zurück:
+
+                    {
+                     \"text\": \"Antwort an avoiding markdown except <b>\",
+                     \"sprach\": "BCP-47 Sprachcode z.B. de-DE, en-US, fr-FR\"
+                     }
+                     ,`
                 },
                 ...chatverlauf.slice(-6) || [],
                 {
@@ -70,10 +77,17 @@ const askCustomer = (app) => {
             temperature: 0.3,
         });
         const answer = completion.choices[0].message.content;
-        console.log(completion.choices[0].message)
-        ver.push({ role: "assistant", content: answer, timestamp: new Date() });
+        let parsed 
+        try{
+            parsed = JSON.parse(answer)
+        }catch{
+              console.error("Invalid JSON from OpenAI:", raw);
+              return res.status(500).json({ error: "AI response invalid" });
+        }
+        console.log(parsed)
+        ver.push({ role: "assistant", content: parsed.text, timestamp: new Date() });
         res.json({
-            answer: answer, schatverlauf: ver,
+            answer: parsed.text, sprach: parsed.sprach, schatverlauf: ver,
         });
         
     } catch (error) {
