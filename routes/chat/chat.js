@@ -80,7 +80,7 @@ const askCustomer = (app) => {
         try{
             parsed = JSON.parse(answer)
         }catch{
-              console.error("Invalid JSON from OpenAI:", raw);
+              console.error("Invalid JSON from OpenAI:", parsed);
               return res.status(500).json({ error: "AI response invalid" });
         }
         console.log(parsed)
