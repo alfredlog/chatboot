@@ -12,7 +12,7 @@ const askCustomer = (app) => {
     app.post("/:firmaName/kundenservice", async (req, res) => {
     try {
         const question = req.body.question;
-        const chatverlauf = req.body.chatverlauf;
+        const chatverlauf = req.body.chatverlauf || [];
         if (!question) {
             return res.status(400).json({ error: "Question is missing" });
         }
@@ -67,6 +67,7 @@ const askCustomer = (app) => {
             temperature: 0.3,
         });
         const answer = completion.choices[0].message.content;
+        consol.log(answer)
         ver.push({ role: "assistant", content: answer, timestamp: new Date() });
         res.json({
             answer: answer, schatverlauf: ver,
