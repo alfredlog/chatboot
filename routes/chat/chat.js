@@ -67,7 +67,7 @@ const askCustomer = (app) => {
             temperature: 0.3,
         });
         const answer = completion.choices[0].message.content;
-        consol.log(answer)
+        console.log(answer)
         ver.push({ role: "assistant", content: answer, timestamp: new Date() });
         res.json({
             answer: answer, schatverlauf: ver,
