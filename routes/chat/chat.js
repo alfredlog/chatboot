@@ -88,7 +88,7 @@ const askCustomer = (app) => {
         });
         const answer = completion.choices[0].message.content;
         console.log(answer)
-        ver.push({ role: "assistant", content: parsed.text, timestamp: new Date() });
+        ver.push({ role: "assistant", content: answer.text, timestamp: new Date() });
         res.json({
             answer: answer.text, sprach: answer.sprach, schatverlauf: ver,
         });
