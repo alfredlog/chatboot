@@ -2,8 +2,7 @@ const { Firma, Actions } = require("../../source/db");
 const { OpenAI } = require("openai");
 require("dotenv").config();
 const data = require("./data");
-const { cache } = require("react");
-const { text } = require("express");
+
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
