@@ -74,6 +74,20 @@ const askCustomer = (app) => {
         const actions = await Actions.findAll({ where: { firma_id: firma.id } });
         const completion = await openai.chat.completions.create({
             model: "gpt-4o-mini",
+              response_format: {
+    type: "json_schema",
+    json_schema: {
+      name: "customer_answer",
+      schema: {
+        type: "object",
+        properties: {
+          text: { type: "string" },
+          sprach: { type: "string" }
+        },
+        required: ["text", "sprach"]
+      }
+    }
+  },
             messages: [
                 {
                     role: "system",
@@ -93,13 +107,8 @@ const askCustomer = (app) => {
                     - Trenne Schritte mit <b>Schritt X:</b>
                     - Nutze <p>-Tags statt Markdown
                     - Verwende keine [] oder ()
-                    Antworte IMMER ausschließlich im folgenden JSON-Format
-                    und gib KEINEN weiteren Text zurück:
-
-                    {
-                     \"text\": \"hier Antwort, auf der frage des Kunden\",
-                     \"sprach\": "BCP-47 Sprachcode z.B. de-DE, en-US, fr-FR\"
-                     }`, 
+                    -gebe immer die sprach auf der du antwortet in BCP-47 Sprachcode z.B. de-DE, en-US, fr-FR
+                   `, 
                 },
                 ...customer.chatverlauf.slice(-6),
                 {
