@@ -14,7 +14,7 @@ module.exports = async (req, res, next) => {
             return res.status(401).json({ message: 'Token missing' });
         }
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, process.env.JWT_SECRETC);
         const user = await User.findByPk(decoded.id);
         if (!user) {
             return res.status(401).json({ message: 'User not found' });

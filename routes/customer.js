@@ -37,7 +37,7 @@ const loginCustomer = (app) => {
       if (!customer) {
         return res.status(404).json({ error: "Customer not found" });
       }
-      const token = jwt.sign({ id: customer.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+      const token = jwt.sign({ id: customer.id }, process.env.JWT_SECRETC, { expiresIn: '1h' });
       res.status(200).json({ customer, token });
     } catch (error) {
       console.error(error);
@@ -89,7 +89,10 @@ const askCustomer = (app) => {
                     - wenn ein Schritt für die Action klar ist, füge ihn hinzu.
                     - Erfinde keine Informationen.
                     - wenn die Informationen im Kontext nicht ausreichen, um die Frage zu beantworten, sage höflich, dass du nicht helfen kannst.
-                     Sei immer höflich, hilfsbereit,professionell und kurz.`,
+                     Sei immer höflich, hilfsbereit,professionell und kurz.
+                    - gebe mir auch die sprach, auf der du geantwortet hast zum Beispiel für Deutsch du gibst de-DE , englisch du gibst : en-US and soweit
+                    - am Ende gebe mir ein Jsons mit {text: answer, sprach: sprach} und nicht mehr in der antwort
+                    - wenn mehr schrite in der antwort gibt, trennen voneinder mit <b>`, 
                 },
                 ...customer.chatverlauf.slice(-6),
                 {

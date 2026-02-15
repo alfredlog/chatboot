@@ -40,7 +40,7 @@ async function loadWebsite(url) {
   });
   $("button").each((_, el) => {
     const textb = $(el).text().trim();
-    if (text) {
+    if (textb) {
       elements.push({
         type : "button",
         text : textb,

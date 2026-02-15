@@ -87,7 +87,7 @@ async function ingestFirmaData(firmaId, pdfs, websites) {
                    - url (zielseite der Aktion)
                    - confidence (0–1)
 
-                  Gib NUR valides JSON zurück.
+                  Gib NUR valides JSON-Array zurück die ich direct mit JSON.parse(actionsJSON.output_text) erhalten kann
                   Ignoriere irrelevante oder rechtliche Links.
 
       Website-Elemente:
@@ -112,7 +112,6 @@ async function ingestFirmaData(firmaId, pdfs, websites) {
         }
       }
     }
-
     console.log("Ingestion finished for firma", firmaId);
   } catch (err) {
     console.error("Ingestion error:", err);

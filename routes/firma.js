@@ -280,7 +280,7 @@ const subscribeCancel = (app) => {
         return res.status(400).json({ error: "No active subscription found" });
       }
       const subscriptionId = subscriptions.data[0].id;
-      await stripe.subscriptions.del(subscriptionId);
+      await stripe.subscriptions.cancel(subscriptionId);
       res.status(200).json({ message: "Subscription cancelled successfully" });
     } catch (error) {
       console.error(error);
