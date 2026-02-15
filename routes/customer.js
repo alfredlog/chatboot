@@ -74,20 +74,20 @@ const askCustomer = (app) => {
         const actions = await Actions.findAll({ where: { firma_id: firma.id } });
         const completion = await openai.chat.completions.create({
             model: "gpt-4o-mini",
-              response_format: {
-    type: "json_schema",
-    json_schema: {
-      name: "customer_answer",
-      schema: {
-        type: "object",
-        properties: {
-          text: { type: "string" },
-          sprach: { type: "string" }
-        },
-        required: ["text", "sprach"]
-      }
-    }
-  },
+            response_format: {
+              type: "json_schema",
+              json_schema: {
+                name: "customer_answer",
+                schema: {
+                  type: "object",
+                  properties: {
+                  text: { type: "string" },
+                  sprach: { type: "string" }
+             },
+             required: ["text", "sprach"]
+                }
+              }
+            },
             messages: [
                 {
                     role: "system",
@@ -126,16 +126,7 @@ const askCustomer = (app) => {
             ],
             temperature: 0.3,
         });
-        const answer = completion.choices[0].message.content;
-        console.log(answer)
-        let parsed 
-        try{
-            parsed = JSON.parse(answer)
-        }catch{
-              console.error("Invalid JSON from OpenAI:", parsed);
-              return res.status(500).json({ error: "AI response invalid" });
-        }
-       
+        const answer = completion.choices[0].message.content;       
         ver.push({ role: "assistant", content: answer, timestamp: new Date() });
         await Customer.update({
             chatverlauf: ver
