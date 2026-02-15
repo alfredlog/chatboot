@@ -54,7 +54,7 @@ const askCustomer = (app) => {
                     und gib KEINEN weiteren Text zurück:
 
                     {
-                     \"text\": \"Antwort an avoiding markdown except <b>\",
+                     \"text\": \"hier Antwort, auf der frage des Kunden\",
                      \"sprach\": "BCP-47 Sprachcode z.B. de-DE, en-US, fr-FR\"
                      }
                      ,`
