@@ -136,7 +136,7 @@ const askCustomer = (app) => {
               console.error("Invalid JSON from OpenAI:", parsed);
               return res.status(500).json({ error: "AI response invalid" });
         }     
-        ver.push({ role: "assistant", content: answer, timestamp: new Date() });
+        ver.push({ role: "assistant", content: parsed.text, timestamp: new Date() });
         await Customer.update({
             chatverlauf: ver
         }, { where: { id: req.params.customerId } });
