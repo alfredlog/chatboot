@@ -4,13 +4,11 @@ const cors = require('cors');
 const data = require('./routes/chat/data');
 require("dotenv")
 
-const port = process.env.PORT || 2005;
-
+const port = process.env.PORT || 3000;
 
 app.use(cors());
 
 // Middleware to parse JSON bodies
-
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
