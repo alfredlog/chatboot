@@ -70,8 +70,9 @@ const createFirma = (app) => {
       ingestFirmaData(firma.id, pdfs, webs)
        .catch(err => {
         console.error("Ingestion failed:", err);
-    });
-      res.status(201).json({firma, status: "INGESTION_STARTED"});
+      });
+      const token = jwt.sign({ id: firma.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+      res.status(201).json({firma, status: "INGESTION_STARTED", token});
     } catch (error) {
       if (error instanceof ValidationError) {
         return res.status(400).json({ error: error.errors.map(e => e.message).join(", ") });
@@ -108,8 +109,10 @@ const findAllCustomers = (app) => {
   app.get("/:firmaLinkName/customers", auth, async (req, res) => {
     try {
       const { firmaLinkName } = req.params;
+      const firma  = Firma.findOne({where:{linkName : firmaLinkName}})
       const customers = await Customer.findAll({ where: { firmaName: firmaLinkName }, order: [['UpdatedAt', 'DESC']] });
-      res.status(200).json({ customers });
+      const token = jwt.sign({ id: firma.id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+      res.status(200).json({ customers, token });
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Interner Serverfehler" });
@@ -155,7 +158,8 @@ const findAllDocuments = (app) => {
         return res.status(404).json({ error: "Firma not found" });
       }
       const documents = await Document.findAll({ where: { firma_id: firma.id }, order: [['UpdatedAt', 'DESC']] });
-      res.status(200).json({ documents });
+      const token = jwt.sign({ id: firma.id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+      res.status(200).json({ documents, token });
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Interner Serverfehler" });
@@ -165,7 +169,8 @@ const findAllDocuments = (app) => {
 const deleteDocument = (app) => {
   app.delete("/:firmaLinkName/documents/:id", auth, async (req, res) => {
     try {
-      const { id } = req.params;
+      const { id, firmaLinkName } = req.params;
+      const firma = Firma.findOne({where: {linkName : firmaLinkName}})
       const document = await Document.findByPk(id);
       if (!document) {
         return res.status(404).json({ error: "Document not found" });
@@ -179,7 +184,8 @@ const deleteDocument = (app) => {
       };
       const command = new DeleteObjectCommand(deleteParams);
       await s3.send(command);
-      res.status(200).json({ message: "Document deleted successfully" });
+      const token = jwt.sign({ id: firma.id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+      res.status(200).json({ message: "Document deleted successfully", token });
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Interner Serverfehler" });
@@ -219,8 +225,9 @@ const AddDocument = (app) => {
       ingestFirmaData(firma.id, pdfs, webs)
        .catch(err => {
         console.error("Ingestion failed:", err);
-    });
-      res.status(201).json({ status: "INGESTION_STARTED"});
+      });
+      const token = jwt.sign({ id: firma.id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+      res.status(201).json({ status: "INGESTION_STARTED", token});
     } catch (error) {
       if (error instanceof ValidationError) {
         return res.status(400).json({ error: error.errors.map(e => e.message).join(", ") });
@@ -256,7 +263,8 @@ const firmaSubscription = (app) => {
         success_url: `https://pdf-libre.de`,
         cancel_url: `https://pdf-libre.de`,
       });
-      res.status(200).json({ url: session.url });
+      const token = jwt.sign({ id: firma.id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+      res.status(200).json({ url: session.url , token});
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Interner Serverfehler" });
@@ -281,7 +289,8 @@ const subscribeCancel = (app) => {
       }
       const subscriptionId = subscriptions.data[0].id;
       await stripe.subscriptions.cancel(subscriptionId);
-      res.status(200).json({ message: "Subscription cancelled successfully" });
+      const token = jwt.sign({ id: firma.id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+      res.status(200).json({ message: "Subscription cancelled successfully", token });
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Interner Serverfehler" });

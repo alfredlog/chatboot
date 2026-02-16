@@ -22,7 +22,8 @@ const createCustomer = (app) => {
         firmaName: req.params.firmaName,
         chatverlauf
       });
-      res.status(201).json(customer);
+      const token = jwt.sign({ id: customer.id }, process.env.JWT_SECRETC, { expiresIn: '1h' });
+      res.status(201).json({customer, token});
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: " Internal server error" });
@@ -139,8 +140,9 @@ const askCustomer = (app) => {
         await Customer.update({
             chatverlauf: ver
         }, { where: { id: req.params.customerId } });
+        const token = jwt.sign({ id: customer.id }, process.env.JWT_SECRETC, { expiresIn: '1h' });
         res.json({
-            answer: parsed.text, sprach: parsed.sprach, sourceRefs: sourceRefs
+            answer: parsed.text, sprach: parsed.sprach, token
         });
         
     } catch (error) {
