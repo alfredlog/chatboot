@@ -96,10 +96,17 @@ const loginFirma = (app) => {
       if (!isPasswordValid) {
         return res.status(401).json({ error: "Invalid password" });
       }
-      const token = jwt.sign({ id: firma.id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+      const token = jwt.sign({ id: firma.id }, process.env.JWT_SECRET, { expiresIn: "15m" });
       const refreshToken = jwt.sign({ id: firma.id }, process.env.JWT_SECRETF, { expiresIn: "7d" });
       await firma.update({ refreshToken });
-      res.status(200).json({ token, firma, refreshToken });
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "Strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        path: "/refresh-token"
+      });
+      res.status(200).json({ token, firma });
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Interner Serverfehler" });
@@ -295,25 +302,23 @@ const subscribeCancel = (app) => {
 const refreshToken = (app) => {
   app.post("/refresh-token", async (req, res) => {
     try {
-      const { refreshToken } = req.body;
+      const refreshToken = req.cookies.refreshToken;
       if (!refreshToken) {
         return res.status(400).json({ message: 'Refresh token missing' });
       }
       const decoded = jwt.verify(refreshToken, process.env.JWT_SECRETF);
       if (!decoded || !decoded.id) {
-        return res.status(401).json({ message: 'Invalid refresh token' });
+        return res.status(403).json({ message: 'Invalid refresh token' });
       }
       const firma = await Firma.findByPk(decoded.id);
       if (!firma || firma.refreshToken !== refreshToken) {
-        return res.status(401).json({ message: 'Invalid refresh token' });
+        return res.status(403).json({ message: 'Invalid refresh token' });
       }
-      const newToken = jwt.sign({ id: firma.id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-      const newRefreshToken = jwt.sign({ id: firma.id }, process.env.JWT_SECRETF, { expiresIn: "7d" });
-      await firma.update({ refreshToken: newRefreshToken });
-      res.status(200).json({ token: newToken, refreshToken: newRefreshToken });
+      const newToken = jwt.sign({ id: firma.id }, process.env.JWT_SECRET, { expiresIn: "15m" });
+      res.status(200).json({ token: newToken});
     } catch (error) {
       console.error(error);
-      res.status(401).json({ message: 'Invalid refresh token', error: error.message });
+      res.status(403).json({ message: 'Invalid refresh token', error: error.message });
     }
   });
 }
@@ -322,7 +327,10 @@ const logoutFirma = (app) => {
     try {
       const firma = req.user;
       await firma.update({ refreshToken: null });
-      res.status(200).json({ message: "Logged out successfully" });
+      res.clearCookie("refreshToken", {
+        path: "/refresh-token",
+      });
+      res.status(204).json({ message: "Logged out successfully" });
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Interner Serverfehler" });
