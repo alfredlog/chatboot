@@ -50,9 +50,13 @@ module.exports = firmaWebhook = (app) => {
             console.log("Subscription details:", subscription);
             if (subscription.current_period_end) {
             firma.expireAt = new Date(subscription.current_period_end * 1000);
-            await firma.save();
              }
-          }
+             else {
+              firma.expireAt = new Date(invoice.period_end * 1000);
+            }
+            await firma.save();
+            console.log(`✅ Firma ${firma.name} subscription renewed, expires at ${firma.expireAt}`);
+         }
         }
       if (event.type === "invoice.payment_failed") {
         const invoice = event.data.object;
