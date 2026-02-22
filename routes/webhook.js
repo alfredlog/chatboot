@@ -49,7 +49,7 @@ module.exports = firmaWebhook = (app) => {
             },
          });
          console.log(firma)
-         const date
+         let date;
          if (invoice.subscription) {
             const subscription = await stripe.subscriptions.retrieve(invoice.subscription);
             console.log("Subscription details:", subscription);
