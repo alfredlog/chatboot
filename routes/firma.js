@@ -328,4 +328,5 @@ module.exports = {
   firmaSubscription,
   subscribeCancel,
   findOneFirma,
+  refreshToken
 };
