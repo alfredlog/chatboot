@@ -29,7 +29,7 @@ Document.hasMany(Chunk, { foreignKey: "document_id" });
 
 const dbSync = async() => {
     try {
-        await db.sync({force: true});
+        await db.sync();
         await db.query(`
           CREATE EXTENSION IF NOT EXISTS vector;
           ALTER TABLE "Chunks"
