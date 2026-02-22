@@ -71,7 +71,7 @@ const createFirma = (app) => {
        .catch(err => {
         console.error("Ingestion failed:", err);
       });
-      const token = jwt.sign({ id: firma.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+      const token = jwt.sign({ id: firma.id }, process.env.JWT_SECRET, { expiresIn: "1h" });
       res.status(201).json({firma, status: "INGESTION_STARTED", token});
     } catch (error) {
       if (error instanceof ValidationError) {
@@ -109,7 +109,7 @@ const findAllCustomers = (app) => {
   app.get("/:firmaLinkName/customers", auth, async (req, res) => {
     try {
       const { firmaLinkName } = req.params;
-      const firma  = Firma.findOne({where:{linkName : firmaLinkName}})
+      const firma  = await Firma.findOne({where:{linkName : firmaLinkName}})
       const customers = await Customer.findAll({ where: { firmaName: firmaLinkName }, order: [['UpdatedAt', 'DESC']] });
       const token = jwt.sign({ id: firma.id }, process.env.JWT_SECRET, { expiresIn: "1h" });
       res.status(200).json({ customers, token });
