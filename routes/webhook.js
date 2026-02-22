@@ -44,7 +44,10 @@ module.exports = firmaWebhook = (app) => {
          const invoice = event.data.object;
          console.log("Invoice payment succeeded:", event.data);
          const firmaId = invoice.client_reference_id;
-         const firma = await Firma.findByPk(firmaId);
+         const firma = await Firma.findOne({
+           where: { stripeCustomerId  : invoice.customer
+            },
+         });
          console.log(firma)
          if (invoice.subscription) {
             const subscription = await stripe.subscriptions.retrieve(invoice.subscription);
