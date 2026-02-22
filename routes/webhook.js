@@ -49,16 +49,16 @@ module.exports = firmaWebhook = (app) => {
             },
          });
          console.log(firma)
+         const date
          if (invoice.subscription) {
             const subscription = await stripe.subscriptions.retrieve(invoice.subscription);
             console.log("Subscription details:", subscription);
             if (subscription.current_period_end) {
-              firma.expireAt = new Date(subscription.current_period_end * 1000);
+               date = new Date(subscription.current_period_end * 1000);
             } else {
-              console.warn("⚠️ Subscription missing current_period_end, using invoice period_end");
-              firma.expireAt = new Date(invoice.period_end * 1000);
+               date = new Date(invoice.period_end * 1000);
             }
-            await firma.save();
+            await firma.update({ expireAt: date });
             console.log(`✅ Firma ${firma.name} subscription renewed, expires at ${firma.expireAt}`);
          }
         }
