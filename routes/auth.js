@@ -4,6 +4,7 @@ const User = Firma;
 
 module.exports = async (req, res, next) => {
     try {
+        console.log("hallo")
         const authHeader = req.headers['authorization'];
         if (!authHeader) {
             return res.status(401).json({ message: 'Authorization header missing' });

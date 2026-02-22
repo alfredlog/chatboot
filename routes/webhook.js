@@ -46,7 +46,6 @@ module.exports = firmaWebhook = (app) => {
          const firma = await Firma.findByPk(firmaId);
          if (invoice.subscription) {
             const subscription = await stripe.subscriptions.retrieve(invoice.subscription);
-
             if (subscription.current_period_end) {
             firma.expireAt = new Date(subscription.current_period_end * 1000);
             await firma.save();
@@ -55,7 +54,6 @@ module.exports = firmaWebhook = (app) => {
         }
       if (event.type === "invoice.payment_failed") {
         const invoice = event.data.object;
-
         const firma = await Firma.findOne({
           where: { stripeCustomerId: invoice.customer },
         });
