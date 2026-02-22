@@ -71,7 +71,6 @@ const createFirma = (app) => {
        .catch(err => {
         console.error("Ingestion failed:", err);
       });
-      const token = jwt.sign({ id: firma.id }, process.env.JWT_SECRET, { expiresIn: "1h" });
       res.status(201).json({firma, status: "INGESTION_STARTED", token});
     } catch (error) {
       if (error instanceof ValidationError) {
@@ -98,7 +97,9 @@ const loginFirma = (app) => {
         return res.status(401).json({ error: "Invalid password" });
       }
       const token = jwt.sign({ id: firma.id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-      res.status(200).json({ token, firma });
+      const refreshToken = jwt.sign({ id: firma.id }, process.env.JWT_SECRETF, { expiresIn: "7d" });
+      await firma.update({ refreshToken });
+      res.status(200).json({ token, firma, refreshToken });
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Interner Serverfehler" });
@@ -111,8 +112,7 @@ const findAllCustomers = (app) => {
       const { firmaLinkName } = req.params;
       const firma  = await Firma.findOne({where:{linkName : firmaLinkName}})
       const customers = await Customer.findAll({ where: { firmaName: firmaLinkName }, order: [['UpdatedAt', 'DESC']] });
-      const token = jwt.sign({ id: firma.id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-      res.status(200).json({ customers, token });
+      res.status(200).json({ customers});
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Interner Serverfehler" });
@@ -158,8 +158,7 @@ const findAllDocuments = (app) => {
         return res.status(404).json({ error: "Firma not found" });
       }
       const documents = await Document.findAll({ where: { firma_id: firma.id }, order: [['UpdatedAt', 'DESC']] });
-      const token = jwt.sign({ id: firma.id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-      res.status(200).json({ documents, token });
+      res.status(200).json({ documents});
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Interner Serverfehler" });
@@ -184,8 +183,7 @@ const deleteDocument = (app) => {
       };
       const command = new DeleteObjectCommand(deleteParams);
       await s3.send(command);
-      const token = jwt.sign({ id: firma.id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-      res.status(200).json({ message: "Document deleted successfully", token });
+      res.status(200).json({ message: "Document deleted successfully"});
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Interner Serverfehler" });
@@ -226,8 +224,7 @@ const AddDocument = (app) => {
        .catch(err => {
         console.error("Ingestion failed:", err);
       });
-      const token = jwt.sign({ id: firma.id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-      res.status(201).json({ status: "INGESTION_STARTED", token});
+      res.status(201).json({ status: "INGESTION_STARTED" });
     } catch (error) {
       if (error instanceof ValidationError) {
         return res.status(400).json({ error: error.errors.map(e => e.message).join(", ") });
@@ -263,8 +260,7 @@ const firmaSubscription = (app) => {
         success_url: `https://pdf-libre.de`,
         cancel_url: `https://pdf-libre.de`,
       });
-      const token = jwt.sign({ id: firma.id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-      res.status(200).json({ url: session.url , token});
+      res.status(200).json({ url: session.url});
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Interner Serverfehler" });
@@ -289,7 +285,6 @@ const subscribeCancel = (app) => {
       }
       const subscriptionId = subscriptions.data[0].id;
       await stripe.subscriptions.cancel(subscriptionId);
-      const token = jwt.sign({ id: firma.id }, process.env.JWT_SECRET, { expiresIn: "1h" });
       res.status(200).json({ message: "Subscription cancelled successfully", token });
     } catch (error) {
       console.error(error);
@@ -297,7 +292,31 @@ const subscribeCancel = (app) => {
     }
   });
 };
-
+const refreshToken = (app) => {
+  app.post("/refresh-token", async (req, res) => {
+    try {
+      const { refreshToken } = req.body;
+      if (!refreshToken) {
+        return res.status(400).json({ message: 'Refresh token missing' });
+      }
+      const decoded = jwt.verify(refreshToken, process.env.JWT_SECRETF);
+      if (!decoded || !decoded.id) {
+        return res.status(401).json({ message: 'Invalid refresh token' });
+      }
+      const firma = await Firma.findByPk(decoded.id);
+      if (!firma || firma.refreshToken !== refreshToken) {
+        return res.status(401).json({ message: 'Invalid refresh token' });
+      }
+      const newToken = jwt.sign({ id: firma.id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+      const newRefreshToken = jwt.sign({ id: firma.id }, process.env.JWT_SECRETF, { expiresIn: "7d" });
+      await firma.update({ refreshToken: newRefreshToken });
+      res.status(200).json({ token: newToken, refreshToken: newRefreshToken });
+    } catch (error) {
+      console.error(error);
+      res.status(401).json({ message: 'Invalid refresh token', error: error.message });
+    }
+  });
+}
 module.exports = {
   createFirma,
   loginFirma,
