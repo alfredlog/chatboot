@@ -292,7 +292,7 @@ const subscribeCancel = (app) => {
       }
       const subscriptionId = subscriptions.data[0].id;
       await stripe.subscriptions.cancel(subscriptionId);
-      res.status(200).json({ message: "Subscription cancelled successfully", token });
+      res.status(200).json({ message: "Subscription cancelled successfully"});
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Interner Serverfehler" });
