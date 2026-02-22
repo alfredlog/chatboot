@@ -317,6 +317,18 @@ const refreshToken = (app) => {
     }
   });
 }
+const logoutFirma = (app) => {
+  app.post("/logout-firma", auth, async (req, res) => {
+    try {
+      const firma = req.user;
+      await firma.update({ refreshToken: null });
+      res.status(200).json({ message: "Logged out successfully" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Interner Serverfehler" });
+    }
+  });
+}
 module.exports = {
   createFirma,
   loginFirma,
@@ -328,5 +340,6 @@ module.exports = {
   firmaSubscription,
   subscribeCancel,
   findOneFirma,
-  refreshToken
+  refreshToken,
+  logoutFirma
 };

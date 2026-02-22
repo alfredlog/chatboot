@@ -25,8 +25,7 @@ data.initEmbedder();
 
 const chatRoutes = require('./routes/chat/chat');
 chatRoutes(app);
-app.get("/health", (req, res) => res.send("ok"));
-const {createFirma, loginFirma, findAllCustomers, findAllDocuments, deleteDocument, AddDocument, subscribeCancel, firmaSubscription, findOneFirma,refreshToken  }= require('./routes/firma');
+const {createFirma, loginFirma, findAllCustomers, findAllDocuments, deleteDocument, AddDocument, subscribeCancel, firmaSubscription, findOneFirma,refreshToken, logoutFirma  }= require('./routes/firma');
 createFirma(app);
 loginFirma(app);
 findAllCustomers(app);
@@ -37,6 +36,7 @@ findOneFirma(app);
 firmaSubscription(app);
 subscribeCancel(app);
 AddDocument(app);
+logoutFirma(app);
 
 const {createCustomer, askCustomer, loginCustomer} = require('./routes/customer');
 createCustomer(app);
