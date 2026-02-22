@@ -71,7 +71,7 @@ const createFirma = (app) => {
        .catch(err => {
         console.error("Ingestion failed:", err);
       });
-      res.status(201).json({firma, status: "INGESTION_STARTED", token});
+      res.status(201).json({firma, status: "INGESTION_STARTED"});
     } catch (error) {
       if (error instanceof ValidationError) {
         return res.status(400).json({ error: error.errors.map(e => e.message).join(", ") });

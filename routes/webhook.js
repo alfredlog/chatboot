@@ -42,10 +42,12 @@ module.exports = firmaWebhook = (app) => {
       }
       if (event.type === "invoice.payment_succeeded") {
          const invoice = event.data.object;
+         console.log("Invoice payment succeeded:", event.data);
          const firmaId = invoice.client_reference_id;
          const firma = await Firma.findByPk(firmaId);
          if (invoice.subscription) {
             const subscription = await stripe.subscriptions.retrieve(invoice.subscription);
+            console.log("Subscription details:", subscription);
             if (subscription.current_period_end) {
             firma.expireAt = new Date(subscription.current_period_end * 1000);
             await firma.save();
@@ -61,7 +63,6 @@ module.exports = firmaWebhook = (app) => {
         if (firma) {
           firma.subscription = "free";
           await firma.save();
-
           console.log(`⚠️ Firma ${firma.name} downgraded to FREE (payment failed)`);
         }
       }
