@@ -302,6 +302,8 @@ const subscribeCancel = (app) => {
 const refreshToken = (app) => {
   app.post("/refresh-token", async (req, res) => {
     try {
+      const cookieParser = require("cookie-parser");
+      app.use(cookieParser()); 
       const refreshToken = req.cookies.refreshToken;
       console.log("Received refresh token:", refreshToken);
       if (!refreshToken) {
@@ -331,6 +333,9 @@ const logoutFirma = (app) => {
       await firma.update({ refreshToken: null });
       res.clearCookie("refreshToken", {
         path: "/refresh-token",
+        httpOnly: true,
+        secure: false,
+        sameSite: "Lax"
       });
       res.status(204).json({ message: "Logged out successfully" });
     } catch (error) {
