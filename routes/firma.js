@@ -304,6 +304,7 @@ const refreshToken = (app) => {
     try {
 
       const refreshToken = req.cookies.refreshToken;
+      console.log(req.cookies)
       console.log("Received refresh token:", refreshToken);
       if (!refreshToken) {
         console.error("Refresh token missing");
