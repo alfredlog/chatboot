@@ -303,7 +303,9 @@ const refreshToken = (app) => {
   app.post("/refresh-token", async (req, res) => {
     try {
       const refreshToken = req.cookies.refreshToken;
+      console.log("Received refresh token:", refreshToken);
       if (!refreshToken) {
+        console.error("Refresh token missing");
         return res.status(400).json({ message: 'Refresh token missing' });
       }
       const decoded = jwt.verify(refreshToken, process.env.JWT_SECRETF);
