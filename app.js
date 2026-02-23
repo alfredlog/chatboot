@@ -18,7 +18,9 @@ app.listen(port, () => {
 });
 require('./routes/webhook')(app);
 app.use(express.json());
-app.get("/", (req, res)=>{
+const cookieParser = require("cookie-parser");
+app.use(cookieParser());
+app.get("/", (req, res) => {
   res.send("wellcome")
 })
 
