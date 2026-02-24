@@ -302,7 +302,6 @@ const subscribeCancel = (app) => {
 const refreshToken = (app) => {
   app.post("/refresh-token", async (req, res) => {
     try {
-
       const refreshToken = req.cookies.refreshToken;
       console.log(req.cookies)
       console.log("Received refresh token:", refreshToken);
