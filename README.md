@@ -354,13 +354,7 @@ Example response
 
 ------------------------------------------------------------------------
 
-# License
-
-MIT License
-
-------------------------------------------------------------------------
-
 # Author
 
-alfredlog\
+alfred Mushagalusa Munganga.
 https://github.com/alfredlog
